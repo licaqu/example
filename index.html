@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>AI SSH Client</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="tab-bar">
+        <!-- Tabs will be added here by renderer.js -->
+        <button id="add-tab-btn">+</button>
+    </div>
+    <div class="container">
+        <div class="sidebar">
+            <input type="text" id="searchSessions" placeholder="Search sessions...">
+            
+            <select id="groupFilter">
+                <option value="">All Groups</option>
+                <!-- Group options will be populated here -->
+            </select>
+
+            <ul id="sessionList">
+                <!-- Example session item (to be replaced by dynamic content) -->
+                <li>
+                    <div class="session-info">
+                        <strong>My Web Server</strong><br>
+                        <small>user@192.168.1.100</small>
+                    </div>
+                    <div class="session-actions">
+                        <button class="connect-btn">Connect</button>
+                        <button class="edit-btn">Edit</button>
+                        <button class="delete-btn">Delete</button>
+                    </div>
+                </li>
+                <li>
+                    <div class="session-info">
+                        <strong>Dev Machine</strong><br>
+                        <small>devuser@dev.example.com</small>
+                    </div>
+                    <div class="session-actions">
+                        <button class="connect-btn">Connect</button>
+                        <button class="edit-btn">Edit</button>
+                        <button class="delete-btn">Delete</button>
+                    </div>
+                </li>
+            </ul>
+            <button id="addNewSessionBtn">Add New Session</button>
+
+            <hr style="margin: 20px 0;"> <!-- Visual separator -->
+
+            <div id="ai-settings-container">
+                <h4>AI Settings</h4>
+                <button id="setApiKeyBtn">Set AI API Key</button>
+                <div id="apiKeyForm" style="display:none; margin-top: 10px;">
+                    <label for="apiKeyInput" style="display: block; margin-bottom: 5px;">API Key:</label>
+                    <input type="password" id="apiKeyInput" placeholder="Enter your API key" style="width: calc(100% - 22px); margin-bottom: 10px; padding: 8px; box-sizing: border-box;">
+                    <button id="saveApiKeyBtn" style="padding: 8px 12px; margin-right: 5px;">Save API Key</button>
+                    <button id="clearApiKeyBtn" style="padding: 8px 12px;">Clear API Key</button>
+                </div>
+                <p style="font-size: 0.9em; margin-top: 10px;"><span id="apiKeyStatus">API Key: Checking...</span></p>
+            </div>
+
+            <hr style="margin: 20px 0;"> <!-- Visual separator -->
+
+            <div id="task-template-container">
+                <h4>Smart Tasks</h4>
+                <select id="taskTemplateSelect" style="width: 100%; margin-bottom: 10px; padding: 8px; box-sizing: border-box;">
+                    <option value="">-- Select a Task --</option>
+                </select>
+                <div id="taskPlaceholdersForm" style="margin-bottom: 10px;"></div>
+                <button id="executeTaskBtn" style="display:none; padding: 8px 12px; width: 100%; margin-bottom: 10px;">Execute Task Commands</button>
+                <div id="taskCommandsPreview" style="background: #222; padding: 5px; white-space: pre-wrap; margin-top:5px; font-family: monospace; font-size: 0.85em; border-radius: 3px; max-height: 150px; overflow-y: auto;">
+                    <!-- Commands will be shown here -->
+                </div>
+            </div>
+            
+            <hr style="margin: 20px 0;"> <!-- Visual separator -->
+            <button id="deleteSelectedSessionsBtn" style="display:none; width: 100%; padding: 10px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Delete Selected Sessions</button>
+
+        </div>
+        <div class="main-content" id="main-content-area">
+            <!-- Terminal containers will be dynamically added here by renderer.js -->
+            <!-- Existing terminal-container div is removed, renderer will create per-tab containers -->
+        </div>
+    </div>
+
+    <div id="status-bar">
+        <span id="status-connection">Status: Disconnected</span>
+        <span id="status-session-name">Session: N/A</span>
+        <span id="status-latency">Latency: N/A</span>
+        <!-- CPU status can be added later if desired -->
+    </div>
+
+    <!-- Modal for Add/Edit Session -->
+    <div id="sessionFormModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeModalBtn">&times;</span>
+            <h2 id="formTitle">Add New Session</h2>
+            
+            <input type="hidden" id="sessionId"> <!-- For editing -->
+
+            <label for="sessionName">Session Name:</label>
+            <input type="text" id="sessionName" required>
+
+            <label for="hostname">Hostname/IP Address:</label>
+            <input type="text" id="hostname" required>
+
+            <label for="port">Port:</label>
+            <input type="number" id="port" value="22" required>
+
+            <label for="username">Username:</label>
+            <input type="text" id="username" required>
+
+            <label for="authType">Authentication Type:</label>
+            <select id="authType">
+                <option value="password">Password</option>
+                <option value="key">SSH Key</option>
+            </select>
+
+            <div id="passwordAuthFields" class="auth-type-fields">
+                <label for="password">Password:</label>
+                <input type="password" id="password">
+            </div>
+
+            <div id="keyAuthFields" class="auth-type-fields">
+                <label for="privateKeyPath">Private Key Path:</label>
+                <input type="text" id="privateKeyPath" placeholder="e.g., ~/.ssh/id_rsa">
+            </div>
+            
+            <label for="sessionGroup">Session Group (Optional):</label>
+            <input type="text" id="sessionGroup" placeholder="e.g., Work, Personal">
+
+            <button id="saveSessionBtn" class="save-btn">Save Session</button>
+            <button id="cancelModalBtn" class="cancel-btn">Cancel</button>
+        </div>
+    </div>
+
+    <script src="./renderer.js"></script>
+</body>
+</html>
