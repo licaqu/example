@@ -1,0 +1,396 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    display: flex;
+    height: 100vh;
+    background-color: #f4f4f4;
+}
+
+.container {
+    display: flex;
+    flex-grow: 1;
+}
+
+.sidebar {
+    width: 300px;
+    background-color: #e9ecef;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.sidebar input[type="text"],
+.sidebar select {
+    width: calc(100% - 20px); /* Account for padding */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+#sessionList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+#sessionList li {
+    background-color: #fff;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#sessionList li .session-info {
+    flex-grow: 1;
+}
+
+#sessionList li .session-actions button {
+    margin-left: 5px;
+    padding: 5px 8px;
+    font-size: 0.8em;
+    border: 1px solid #007bff;
+    background-color: #007bff;
+    color: white;
+    border-radius: 3px;
+    cursor: pointer;
+}
+#sessionList li .session-actions button.edit-btn {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #212529;
+}
+#sessionList li .session-actions button.delete-btn {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+
+.sidebar button#addNewSessionBtn {
+    background-color: #28a745;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.sidebar button#addNewSessionBtn:hover {
+    background-color: #218838;
+}
+
+.main-content {
+    flex-grow: 1;
+    /* padding: 20px; */ /* Padding will be on individual terminal containers if needed */
+    display: flex; /* Will hold multiple terminal containers */
+    flex-direction: column; /* Stack terminal containers, only one visible */
+    position: relative; /* For absolute positioning of terminal containers */
+}
+
+/* #terminalPlaceholder is removed, replaced by dynamic terminal containers */
+/* #terminal-container specific styling is removed, now managed per tab container */
+
+/* Tab Bar Styles */
+#tab-bar {
+    display: flex;
+    align-items: center;
+    background-color: #333;
+    padding: 5px 10px;
+    color: white;
+    height: 40px; /* Fixed height for tab bar */
+    box-sizing: border-box;
+    border-bottom: 1px solid #555;
+}
+
+.tab {
+    display: flex;
+    align-items: center;
+    padding: 8px 15px;
+    margin-right: 5px;
+    background-color: #555;
+    border-radius: 5px 5px 0 0;
+    cursor: pointer;
+    font-size: 0.9em;
+    border: 1px solid #444;
+    border-bottom: none;
+    position: relative; /* For close button */
+}
+
+.tab.active {
+    background-color: #4a4a4a; /* Slightly lighter for active tab */
+    /* background-color: #1e1e1e; /* Match terminal background if desired */
+    color: #fff;
+}
+
+.tab-name {
+    margin-right: 10px; /* Space before close button */
+    max-width: 150px; /* Prevent very long names from breaking layout */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tab-close-btn {
+    background: none;
+    border: none;
+    color: #ccc;
+    font-size: 1.1em;
+    cursor: pointer;
+    padding: 0 3px;
+}
+.tab-close-btn:hover {
+    color: #fff;
+}
+
+#add-tab-btn {
+    background-color: #666;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 1.2em;
+    margin-left: 10px;
+}
+#add-tab-btn:hover {
+    background-color: #777;
+}
+
+/* Terminal Container Styling */
+.terminal-instance-container {
+    width: 100%;
+    height: calc(100vh - 40px); /* Full height minus tab bar */
+    background-color: #1e1e1e; /* Default background, xterm theme will override */
+    display: none; /* Hidden by default, shown when tab is active */
+    box-sizing: border-box;
+    padding: 5px; /* Small padding around the terminal itself */
+}
+
+.terminal-instance-container.active {
+    display: block; /* Show active terminal */
+}
+
+
+/* Ensure body takes full height and container adjusts */
+html, body {
+    height: 100%;
+    overflow: hidden; /* Prevent scrollbars on body */
+}
+
+body {
+    display: flex;
+    flex-direction: column; /* Stack tab-bar and container */
+}
+.container {
+    height: calc(100vh - 40px); /* Adjust height for the tab bar */
+}
+
+/* Status Bar Styles */
+#status-bar {
+    display: flex;
+    align-items: center;
+    background-color: #2c2c2c; /* Slightly different from tab bar for distinction */
+    color: #ccc;
+    padding: 5px 15px;
+    height: 30px; /* Fixed height for status bar */
+    box-sizing: border-box;
+    border-top: 1px solid #444;
+    font-size: 0.85em;
+    position: fixed; /* Fixed at the bottom of the viewport */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100; /* Ensure it's above other content if necessary */
+}
+
+#status-bar span {
+    margin-right: 20px;
+    white-space: nowrap;
+}
+
+#status-bar span:last-child {
+    margin-right: 0;
+}
+
+/* Adjust body and .container to make space for the fixed status bar */
+body {
+    padding-bottom: 30px; /* Height of the status bar */
+    /* display: flex; flex-direction: column; is already set */
+}
+.container {
+    /* height: calc(100vh - 40px); */ /* Original, before fixed status bar */
+    height: calc(100vh - 40px - 30px); /* Adjust for tab-bar AND status-bar */
+}
+.terminal-instance-container {
+    /* height: calc(100vh - 40px); */ /* Original, before fixed status bar */
+    /* height: calc(100vh - 40px - 30px); */ /* Will be flex child, height managed by flex */
+    display: flex; /* Use flex to position terminal and NL input area */
+    flex-direction: column;
+    /* The actual xterm.js viewport will need to shrink to make space for the NL input */
+    /* Padding is removed from here and added to xterm container if needed */
+/* Modal Styles remain the same */
+.modal {
+    display: none; /* Hidden by default */
+} /* End of Modal Styles */
+
+/* NL Input Area Styles */
+.nl-input-area { /* Parent container for input and suggestions */
+    padding: 8px;
+    background-color: #2a2a2a; /* Slightly different from terminal bg */
+    border-top: 1px solid #444;
+    flex-shrink: 0; /* Prevent this area from shrinking */
+}
+
+.nl-input-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.nl-input {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #555;
+    background-color: #333;
+    color: #ddd;
+    border-radius: 4px;
+    margin-right: 8px;
+    font-size: 0.9em;
+}
+
+.nl-send-btn, .nl-execute-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-left: 5px;
+}
+
+.nl-send-btn {
+    background-color: #007bff;
+    color: white;
+}
+.nl-send-btn:hover {
+    background-color: #0056b3;
+}
+
+.nl-execute-btn {
+    background-color: #28a745; /* Green */
+    color: white;
+}
+.nl-execute-btn:hover {
+    background-color: #1e7e34;
+}
+
+.ai-suggestions {
+    min-height: 20px;
+    background: #222;
+    padding: 8px;
+    white-space: pre-wrap; /* Keep formatting from AI */
+    font-family: monospace;
+    font-size: 0.9em;
+    color: #cyana; /* Light cyan for suggestions, can be themed */
+    border-radius: 4px;
+    max-height: 100px; /* Limit height and make scrollable if needed */
+    overflow-y: auto;
+    border: 1px solid #444;
+}
+
+/* Adjust xterm.js viewport height within .terminal-instance-container */
+/* This requires the actual xterm div ('.xterm-viewport' or similar, or its parent) to be targeted */
+/* For now, assume the direct child of .terminal-instance-container that ISN'T .nl-input-area is the xterm area */
+.terminal-instance-container > div:not(.nl-input-area) {
+    flex-grow: 1; /* Terminal takes remaining space */
+    overflow: hidden; /* Important for xterm's own viewport sizing */
+    padding: 5px; /* Restore padding for the terminal itself */
+}
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+}
+
+.modal-content label {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.modal-content input[type="text"],
+.modal-content input[type="password"],
+.modal-content input[type="number"],
+.modal-content select {
+    width: calc(100% - 22px); /* Account for padding and border */
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.modal-content button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.modal-content button.save-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.modal-content button.cancel-btn {
+    background-color: #6c757d;
+    color: white;
+    margin-left: 10px;
+}
+
+/* Authentication type specific fields - initially hidden */
+.auth-type-fields {
+    display: none;
+}
